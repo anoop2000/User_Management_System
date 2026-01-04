@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/styles/dashboard.css">
+</head>
+<body>
+
+    
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <h1>Admin Dashboard</h1>
+        <button class="logout-btn" onclick="window.location.href='/admin/logout'">Logout</button>
+    </nav>
+
+
+    
+
+
+
+    <!-- Main Content -->
+    <main class="dashboard-container">
+        <h2>User Management</h2>
+
+        <!-- Search Form -->
+<form class="mb-3" action="/admin/dashboard" method="get">
+    <div class="input-group">
+        <input
+            type="text"
+            class="form-control"
+            name="search"
+            placeholder="Search by name or email"
+            value="{{searchQuery}}"
+        />
+        <button class="btn btn-primary" type="submit">Search</button>
+        <button type="button" class="btn btn-warning" onclick="clearSearch()">Clear</button>
+
+        
+    </div>
+</form>
+
+
+
+
+        <div class="table-controls">
+
+            <button class="add-user-btn" onclick="openAddUserModal()">Add User</button>
+        </div>
+
+
+        {{#if message}}
+    <div class="alert alert-danger" role="alert">
+        {{{message}}}
+    </div>
+    {{/if}}
+
+
+
+        <table class="user-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    
+                    <th>Email</th>
+                    <th>Actions</th>
+                    {{!-- <th>Name</th> --}}
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {{#each users}}
+                <tr>
+                    <td>{{addOne @index}}</td>
+                    <td>{{this.email}}</td>
+                    <td>
+                        <button class="edit-btn" onclick="openEditUserModal('{{this._id}}', '{{this.email}}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteUser('{{this._id}}')">Delete</button>
+                    </td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
+    </main>
+
+    <!-- Add User Modal -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddUserModal()">&times;</span>
+            <h2>Add User</h2>
+            <form id="addUserForm" method="POST" action="/admin/add-user">
+                {{!-- <label placeholder="Name">Name</label>
+                <input type="text" id="name" name="name"> --}}
+                <label for="addEmail">Email:</label>
+                <input type="email" id="addEmail" name="email" required>
+                <label for="addPassword">Password:</label>
+                <input type="password" id="addPassword" name="password" required>
+                <button type="submit" class="modal-btn">Add User</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditUserModal()">&times;</span>
+            <h2>Edit User</h2>
+            <form id="editUserForm" method="POST" action="/admin/edit-user">
+                <input type="hidden" id="editUserId" name="id">
+                <label for="editEmail">Email:</label>
+                <input type="email" id="editEmail" name="email" required>
+                <label for="editPassword">New Password:</label>
+                <input type="password" id="editPassword" name="password">
+                <button type="submit" class="modal-btn">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        
+        // Open and close Add User Modal
+        function openAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'block';
+        }
+
+        function closeAddUserModal() {
+            document.getElementById('addUserModal').style.display = 'none';
+        }
+
+        // Open and close Edit User Modal
+        function openEditUserModal(id, email) {
+            document.getElementById('editUserModal').style.display = 'block';
+            document.getElementById('editUserId').value = id;
+            document.getElementById('editEmail').value = email;
+        }
+
+        function closeEditUserModal() {
+            document.getElementById('editUserModal').style.display = 'none';
+        }
+
+        // Delete User function
+        function deleteUser(userId) {
+            if(confirm("Are you sure you want to delete this user?")) {
+                window.location.href = `/admin/delete-user/${userId}`;
+            }
+        }
+
+
+        function clearSearch() {
+        // Redirect to the dashboard without search query
+        window.location.href = '/admin/dashboard';
+        }
+        
+    </script>
+
+</body>
+</html>
